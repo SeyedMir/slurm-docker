@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+    cat << EOF
+Usage: $(basename $0) <container_name> <command_line>
+    container_name      Container in which the command in is run.
+    command_line        Command line to run in the container.
+
+    Read from environment:
+    CONTAINER_MOUNTS    Comma-separated list of container mount points.
+EOF
+}
+
+source utils.sh
+
+main() {
+    if [[ $# -lt 2 ]]; then
+        usage >&2
+        exit 1
+    fi
+
+    local container=${1:-}
+    shift 1
+
+    # Get the array of allocated nodes
+    local orig_ifs=$IFS
+    declare -a nodes
+    IFS=','
+    read -ra nodes <<< "$SLURM_NODELIST"
+    IFS=$orig_ifs
+
+    # Use the first and last nodes as the server and client, respectively
+    local server=${nodes[0]}
+    local client=${nodes[-1]}
+
+    echo "Running server on $server"
+    run_node_container "$server" "$container" "$@" &
+    sleep 2 # let the server come up
+
+    echo
+    echo "Running client on $client"
+    run_node_container "$client" "$container" "$@" "$server"
+}
+
+main "$@"
