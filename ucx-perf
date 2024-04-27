@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+export UCX_CUDA_COPY_DMABUF=no
+# export CONTAINER_MOUNTS="/host/foo:/container/bar"
+
+usage() {
+    cat << EOF
+Usage: $(basename $0) <image_path> <tests>
+    image_path  Docker image to use for the tests.
+    tests       UCX perf tests to run.
+EOF
+}
+
+main() {
+    if [[ $# -lt 2 ]]; then
+        usage >&2
+        exit 1
+    fi
+
+    local image=$1
+    shift 1
+    local tests=$@
+    local container=ucx_perf
+
+    ./preload-image.sh "$image" "$container"
+
+    for tst in $tests; do
+        for src in host cuda cuda-managed; do
+            for dst in host cuda cuda-managed; do
+                ./run-client-server $container numactl -N 0 -l \
+                    ucx_perftest -f -t $tst -m $src,$dst \
+                    -b /repos/ucx/contrib/ucx_perftest_config/msg_pow2 \
+                | tee $tst-$src-$dst.dat
+            done
+        done
+    done
+}
+
+main "$@"
