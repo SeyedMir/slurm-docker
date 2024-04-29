@@ -25,11 +25,7 @@ main() {
     shift 1
 
     # Get the array of allocated nodes
-    local orig_ifs=$IFS
-    declare -a nodes
-    IFS=','
-    read -ra nodes <<< "$SLURM_NODELIST"
-    IFS=$orig_ifs
+    local nodes=($(scontrol show hostnames))
 
     # Use the first and last nodes as the server and client, respectively
     local server=${nodes[0]}
