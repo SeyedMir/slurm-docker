@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-export UCX_CUDA_COPY_DMABUF=no
+source ./env_common.sh
+
 # export CONTAINER_MOUNTS="/host/foo:/container/bar"
 
 usage() {
@@ -29,10 +30,12 @@ main() {
     for tst in $tests; do
         for src in host cuda cuda-managed; do
             for dst in host cuda cuda-managed; do
+                local out_file="${tst}_${src}_${dst}"
+                export UCX_LOG_FILE="ucx_log.${out_file}.%h.%p"
                 ./run-client-server $container numactl -N 0 -l \
                     ucx_perftest -f -t $tst -m $src,$dst \
                     -b /repos/ucx/contrib/ucx_perftest_config/msg_pow2 \
-                | tee $tst-$src-$dst.dat
+                | tee "${out_file}.dat"
             done
         done
     done
