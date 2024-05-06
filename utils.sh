@@ -7,9 +7,9 @@ print_run() {
     "$@"
 }
 
-run_node_container() {
-    local node=$1
-    local container=$2
+run_container_node() {
+    local container=$1
+    local node=$2
     shift 2
     if [ -n "${CONTAINER_MOUNTS:-}" ]; then
         set -- --container-mounts "$CONTAINER_MOUNTS" "$@"
