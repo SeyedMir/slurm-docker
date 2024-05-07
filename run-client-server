@@ -21,7 +21,7 @@ main() {
         exit 1
     fi
 
-    local container=${1:-}
+    local container=$1
     shift 1
 
     # Get the array of allocated nodes

@@ -16,8 +16,8 @@ preload_image() {
         exit 1
     fi
 
-    local image=${1:-}
-    local container=${2:-}
+    local image=$1
+    local container=$2
 
     if [[ -z "${SLURM_JOB_NUM_NODES:-}" ]]; then
         echo "ERROR: no slurm session detected" >&2
