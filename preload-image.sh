@@ -25,7 +25,7 @@ preload_image() {
     fi
 
     echo -n "Pre-loading the image on all nodes..."
-    srun -N "$SLURM_JOB_NUM_NODES" --ntasks-per-node 1 --overlap \
+    srun -N "$SLURM_JOB_NUM_NODES" --ntasks-per-node 1 \
          --container-image "$image" --container-name "$container" true
     echo "Done"
 
