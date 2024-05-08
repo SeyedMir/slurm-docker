@@ -32,8 +32,8 @@ main() {
             for dst in host cuda cuda-managed; do
                 local out_file="${tst}_${src}_${dst}"
                 export UCX_LOG_FILE="ucx_log.${out_file}.%h.%p"
-                ./run-client-server $container numactl -N 0 -l \
-                    ucx_perftest -f -t $tst -m $src,$dst \
+                ./run-client-server "$container" numactl -N 0 -l \
+                    ucx_perftest -f -t "$tst" -m "$src","$dst" \
                     -b /repos/ucx/contrib/ucx_perftest_config/msg_pow2 \
                 | tee "${out_file}.dat"
             done
