@@ -30,7 +30,7 @@ main() {
     for tst in $tests; do
         for src in host cuda cuda-managed; do
             for dst in host cuda cuda-managed; do
-                local out_file="${tst}_${src}_${dst}"
+                local out_file="${tst}.${src}.${dst}"
                 export UCX_LOG_FILE="ucx_log.${out_file}.%h.%p"
                 ./run-client-server "$container" numactl -N 0 -l \
                     ucx_perftest -f -t "$tst" -m "$src","$dst" \
