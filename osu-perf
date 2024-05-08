@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source ./env_common.sh
+
+# export CONTAINER_MOUNTS="/host/foo:/container/bar"
+
+export OMPI_MCA_pml=ucx
+export OMPI_MCA_btl=^openib,smcuda
+export OMPI_MCA_btl_tcp_if_exclude=lo,docker
+export OMPI_MCA_opal_common_ucx_tls=any
+export OMPI_MCA_opal_common_ucx_devices=any
+
+usage() {
+    cat << EOF
+Usage: $(basename $0) <image_path> <tests>
+    image_path  Docker image to use for the tests.
+    tests       OSU perf tests to run.
+EOF
+}
+
+source utils.sh
+
+main() {
+    if [[ $# -lt 2 ]]; then
+        usage >&2
+        exit 1
+    fi
+
+    local image=$1
+    shift 1
+    local tests=$@
+    local container=osu_perf
+
+    ./preload-image.sh "$image" "$container"
+
+    for tst in $tests; do
+        for src in H D M; do
+            for dst in H D M; do
+                local out_file="${tst}.${src}.${dst}"
+                export UCX_LOG_FILE="ucx_log.${out_file}.%h.%p"
+                run_container_tasks "$container" 2 numactl -N 0 -l \
+                    bash -c 'export LOCAL_RANK=${SLURM_LOCALID} && ${OSU_HOME}/mpi/pt2pt/'"${tst}" "$src" "$dst" \
+                | tee "${out_file}.dat"
+            done
+        done
+    done
+}
+
+main "$@"
