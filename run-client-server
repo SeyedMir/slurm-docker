@@ -32,12 +32,12 @@ main() {
     local client=${nodes[-1]}
 
     echo "Running server on $server"
-    run_container_node "$container" "$server" "$@" &
+    run_container_node "$container" "$server" 1 "$@" &
     sleep 2 # let the server come up
 
     echo
     echo "Running client on $client"
-    run_container_node "$container" "$client" "$@" "$server"
+    run_container_node "$container" "$client" 1 "$@" "$server"
 }
 
 main "$@"
