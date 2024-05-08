@@ -31,3 +31,14 @@ run_container_node() {
     set -- -N 1 --ntasks-per-node "$ntasks" -w "$node" "$@"
     srun_common "$container" "$@"
 }
+
+# Run the command line in a given container
+# with a given total number of tasks (ranks).
+run_container_tasks() {
+    local container=$1
+    local ntasks=$2
+    shift 2
+
+    set -- -n "$ntasks" "$@"
+    srun_common "$container" "$@"
+}
