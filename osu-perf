@@ -4,7 +4,7 @@ set -euo pipefail
 
 source ./env_common.sh
 
-# export CONTAINER_MOUNTS="/host/foo:/container/bar"
+export CONTAINER_MOUNTS="$PWD/results:/results"
 
 export OMPI_MCA_pml=ucx
 export OMPI_MCA_btl=^openib,smcuda
@@ -39,10 +39,10 @@ main() {
         for src in H D M; do
             for dst in H D M; do
                 local out_file="${tst}.${src}.${dst}"
-                export UCX_LOG_FILE="ucx_log.${out_file}.%h.%p"
+                export UCX_LOG_FILE="/results/ucx_log.${out_file}.%h.%p"
                 run_container_tasks "$container" 2 numactl -N 0 -l \
                     bash -c 'export LOCAL_RANK=${SLURM_LOCALID} && ${OSU_HOME}/mpi/pt2pt/'"${tst}" "$src" "$dst" \
-                | tee "${out_file}.dat"
+                | tee "./results/${out_file}.dat"
             done
         done
     done
