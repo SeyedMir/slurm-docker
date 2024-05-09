@@ -33,11 +33,15 @@ main() {
 
     echo "Running server on $server"
     run_container_node "$container" "$server" 1 "$@" &
-    sleep 2 # let the server come up
+    sleep 3 # let the server come up
 
     echo
     echo "Running client on $client"
-    run_container_node "$container" "$client" 1 "$@" "$server"
+    while ! run_container_node "$container" "$client" 1 "$@" "$server"; do
+        echo "trying to connect to the server again"
+    done
+
+    wait
 }
 
 main "$@"
