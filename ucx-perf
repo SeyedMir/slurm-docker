@@ -4,7 +4,7 @@ set -euo pipefail
 
 source ./env_common.sh
 
-export CONTAINER_MOUNTS="$PWD/results:/results"
+export CONTAINER_MOUNTS="$PWD/container_scripts/:/container_scripts,$PWD/results:/results"
 
 usage() {
     cat << EOF
@@ -32,7 +32,9 @@ main() {
             for dst in host cuda cuda-managed; do
                 local out_file="${tst}.${src}.${dst}"
                 export UCX_LOG_FILE="/results/ucx_log.${out_file}.%h.%p"
-                ./run-client-server "$container" numactl -N 0 -l \
+                ./run-client-server "$container" \
+                    /container_scripts/export-local-rank \
+                    /container_scripts/bind-numa-local-rank \
                     ucx_perftest -f -t "$tst" -m "$src","$dst" \
                     -b /repos/ucx/contrib/ucx_perftest_config/msg_pow2 \
                 | tee "./results/${out_file}.dat"

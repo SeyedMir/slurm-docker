@@ -4,7 +4,7 @@ set -euo pipefail
 
 source ./env_common.sh
 
-export CONTAINER_MOUNTS="$PWD/results:/results"
+export CONTAINER_MOUNTS="$PWD/container_scripts/:/container_scripts,$PWD/results:/results"
 
 export OMPI_MCA_pml=ucx
 export OMPI_MCA_btl=^openib,smcuda
@@ -34,6 +34,7 @@ main() {
     shift 1
     local tests=$@
     local container=osu_perf
+    local osu_home=/usr/local/libexec/osu-micro-benchmarks
 
     ./preload-image.sh "$image" "$container"
 
@@ -43,7 +44,9 @@ main() {
                 local out_file="${tst}.${src}.${dst}"
                 export UCX_LOG_FILE="/results/ucx_log.${out_file}.%h.%p"
                 run_container_tasks "$container" 2 \
-                    bash -c 'export LOCAL_RANK=${SLURM_LOCALID} && numactl -N ${SLURM_LOCALID} -l ${OSU_HOME}/mpi/pt2pt/'"${tst}" "$src" "$dst" \
+                    /container_scripts/export-local-rank \
+                    /container_scripts/bind-numa-local-rank \
+                    "${osu_home}/mpi/pt2pt/${tst}" "$src" "$dst" \
                 | tee "./results/${out_file}.dat"
             done
         done
