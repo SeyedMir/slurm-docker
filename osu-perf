@@ -39,8 +39,8 @@ main() {
     ./preload-image.sh "$image" "$container"
 
     for tst in $tests; do
-        for src in H D M; do
-            for dst in H D M; do
+        for src in H D MH MD; do
+            for dst in H D MH MD; do
                 local out_file="${tst}.${src}.${dst}"
                 export UCX_LOG_FILE="/results/ucx_log.${out_file}.%h.%p"
                 run_container_tasks "$container" 2 \
