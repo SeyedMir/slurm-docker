@@ -1,3 +1,4 @@
 export UCX_PROTO_INFO=${UCX_PROTO_INFO:=y}
 export UCX_LOG_LEVEL=${UCX_LOG_LEVEL:=info}
 export UCX_CUDA_COPY_DMABUF=no
+#export UCX_RNDV_FRAG_MEM_TYPE=cuda

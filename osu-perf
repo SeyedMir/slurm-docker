@@ -11,6 +11,8 @@ export OMPI_MCA_btl=^openib,smcuda
 export OMPI_MCA_btl_tcp_if_exclude=lo,docker
 export OMPI_MCA_opal_common_ucx_tls=any
 export OMPI_MCA_opal_common_ucx_devices=any
+#export PMIX_MCA_psec=^munge
+#export PMIX_MCA_gds=^ds21
 
 usage() {
     cat << EOF
