@@ -10,7 +10,7 @@ usage() {
     cat << EOF
 Usage: $(basename $0) <image_path> <tests>
     image_path  Docker image to use for the tests.
-    tests       UCX perf tests to run.
+    tests       UCX perf tests to run (eg. tag_bw).
 EOF
 }
 
