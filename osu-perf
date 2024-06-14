@@ -4,8 +4,6 @@ set -euo pipefail
 
 source ./env_common.sh
 
-export CONTAINER_MOUNTS="$PWD/container_scripts/:/container_scripts,${RESULTS_DIR}:/results"
-
 export OMPI_MCA_pml=ucx
 export OMPI_MCA_btl=^openib,smcuda
 export OMPI_MCA_btl_tcp_if_exclude=lo,docker

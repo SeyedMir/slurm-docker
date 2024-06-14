@@ -4,8 +4,6 @@ set -euo pipefail
 
 source ./env_common.sh
 
-export CONTAINER_MOUNTS="$PWD/container_scripts/:/container_scripts,${RESULTS_DIR}:/results"
-
 usage() {
     cat << EOF
 Usage: $(basename $0) <image_path> <tests>
